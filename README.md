@@ -1,152 +1,573 @@
 # Loan Approval Prediction
 
-A binary-classification project that predicts whether a loan application is **Approved** or **Rejected**, comparing **Logistic Regression** and **Random Forest** with leakage-safe scikit-learn pipelines and imbalance-aware evaluation.
+**Machine Learning Classification Project with Streamlit Deployment**
 
-> **Status:** model-training phase complete. Deployment has **not** been done yet and is planned as a separate later phase.
+This project predicts whether a loan application is likely to be **Approved** or **Rejected**, based on structured applicant information such as income, credit score, requested loan amount, debt-to-income ratio, and employment status.
 
-## 1. Project Overview
+---
 
-This repository contains the model-training phase of an internship task. Data collection, cleaning, preprocessing and EDA were completed earlier; this notebook trains, tunes (lightly), evaluates and compares two classifiers on the structured applicant data.
+## Table of Contents
 
-## 2. Problem Statement
+1. [Project Overview](#project-overview)
+2. [Project Workflow](#project-workflow)
+3. [Dataset](#dataset)
+4. [Target Distribution](#target-distribution)
+5. [Data Cleaning and Preprocessing](#data-cleaning-and-preprocessing)
+6. [Train/Test Split](#traintest-split)
+7. [Leakage Prevention](#leakage-prevention)
+8. [Exploratory Data Analysis](#exploratory-data-analysis)
+9. [Models Used](#models-used)
+10. [Model Selection](#model-selection)
+11. [Model Evaluation](#model-evaluation)
+12. [Confusion Matrix](#confusion-matrix)
+13. [Feature Importance](#feature-importance)
+14. [Prediction Application](#prediction-application)
+15. [Application Screenshots](#application-screenshots)
+16. [Deployment](#deployment)
+17. [Project Structure](#project-structure)
+18. [Technologies Used](#technologies-used)
+19. [Reproducibility](#reproducibility)
+20. [Limitations](#limitations)
+21. [Ethical / Responsible Use](#ethical--responsible-use)
+22. [Future Improvements](#future-improvements)
+23. [Learning Outcomes](#learning-outcomes)
+24. [Task Completion Checklist](#task-completion-checklist)
+25. [Author](#author)
 
-Given an applicant's income, credit score, requested loan amount, debt-to-income ratio and employment status, predict whether the loan application is approved.
+---
 
-## 3. Objective
+## Project Overview
 
-* Train and compare Logistic Regression and Random Forest on a binary classification task.
-* Evaluate on a held-out test set using metrics that suit an imbalanced target.
-* Aim for at least 90 % test accuracy **without** data leakage, test-set tuning, or label manipulation, and report the real result whatever it is.
+This is a **binary classification** problem. Given structured information about a loan
+applicant, the model predicts one of two outcomes:
 
-## 4. Dataset
+- `Approved`
+- `Rejected`
 
-* File: `data/loan_data.csv`
-* Rows: 24,000 · Columns: 7 · Missing values: 0 · Duplicate rows: 0
-* Target: `Approval` (`Rejected` = 0, `Approved` = 1), imbalanced at about **83.61 % Rejected / 16.39 % Approved**
+The model is trained on historical loan application data and learns patterns between
+applicant attributes (income, credit score, loan amount, debt-to-income ratio, and
+employment status) and the final approval decision. Classification is the appropriate
+approach here because the target is a discrete, two-class outcome rather than a
+continuous value.
 
-The dataset shows very clean, strong patterns and appears to contain synthetic/data-generation structure. Results describe this dataset only and are **not** evidence about real-world lending.
+Given a new applicant's information, the trained model outputs:
 
-## 5. Dataset Features
+- A predicted class (`Approved` or `Rejected`)
+- An approval probability
+- A rejection probability
 
-| Column | Type | Used in initial models |
-|---|---|---|
-| `Income` | numeric | Yes |
-| `Credit_Score` | numeric | Yes |
-| `Loan_Amount` | numeric | Yes |
-| `DTI_Ratio` | numeric | Yes |
-| `Employment_Status` | categorical (`employed` / `unemployed`) | Yes |
-| `Text` | free text (loan purpose) | **No**: needs NLP feature extraction; left for future work |
-| `Approval` | target | Target |
+---
 
-## 6. Machine Learning Approach
-
-Supervised binary classification. The data is split 80/20 (`random_state=42`, `stratify=y`), giving 19,200 training and 4,800 test rows. Model selection and tuning use 5-fold stratified cross-validation on the **training set only**; the test set is used once for the final evaluation.
-
-## 7. Data Preprocessing
-
-All preprocessing is inside scikit-learn `Pipeline` / `ColumnTransformer` objects, so it is fitted only on training data:
-
-* Target label encoding: `Rejected → 0`, `Approved → 1`
-* One-hot encoding of `Employment_Status`
-* `StandardScaler` on numeric features for Logistic Regression (not needed for Random Forest)
-
-Leakage checks in the notebook: no shared rows between train and test, no feature-combination overlap between test and train, target and `Text` excluded from features, and scaler statistics confirmed to match the training data.
-
-## 8. Exploratory Data Analysis
-
-EDA was completed in an earlier phase (not part of this notebook). Its main observations:
-
-* `Credit_Score` has the strongest numerical relationship with approval.
-* `Income` is positively related to approval; `DTI_Ratio` is negatively related; `Loan_Amount` has a weaker negative relationship.
-* `Employment_Status` is very strongly related to approval. In the training split, none of the unemployed applicants were approved.
-
-## 9. Models
-
-| Model | Configuration |
-|---|---|
-| Logistic Regression | `max_iter=1000`, `random_state=42`; default vs `class_weight="balanced"` compared by cross-validated F1 (default was selected) |
-| Random Forest | `random_state=42`; small grid search over `n_estimators`, `max_depth`, `min_samples_split`, `min_samples_leaf`, `class_weight` scored by F1 (selected: 200 trees, `max_depth=20`, `min_samples_split=2`, `min_samples_leaf=1`, no class weights) |
-
-SMOTE was not used. Linear Regression was not used because the task is classification.
-
-## 10. Model Evaluation
-
-Metrics: Accuracy, Precision, Recall, F1-score (for the *Approved* class), confusion matrix, classification report. Because about 84 % of applications are *Rejected*, a model that always predicts *Rejected* scores about 83.6 % accuracy with 0 % recall, so accuracy alone is not enough. A threshold analysis (on out-of-fold training predictions) shows the precision/recall trade-off; the reported results use the default 0.5 threshold.
-
-## 11. Results
-
-Test-set results (4,800 held-out rows, threshold 0.5):
-
-| Model | Accuracy | Precision | Recall | F1-Score |
-|---|---|---|---|---|
-| Random Forest | 99.58 % | 98.24 % | 99.24 % | 98.74 % |
-| Logistic Regression | 92.62 % | 77.44 % | 77.64 % | 77.54 % |
-| *Majority-class baseline (reference)* | 83.60 % | 0.00 % | 0.00 % | 0.00 % |
-
-Both models exceeded the 90 % accuracy target. Random Forest was better on every measured metric on this dataset. Logistic Regression's accuracy looks good, but its Approved-class recall and precision are only about 77 %.
-
-Random Forest reaches 100 % accuracy on the training data and 99.58 % on the test set (cross-validated accuracy about 99.5 %). Possible reasons for such a high score, which are hypotheses rather than proven facts: the dataset seems synthetic and rule-like, `Employment_Status` is extremely informative, and trees can capture non-linear rules that a linear model cannot. Scores like this should not be expected on real lending data.
-
-## 12. Feature Importance
-
-Random Forest importances (`Employment_Status` is split over two one-hot columns):
-
-| Feature | Importance |
-|---|---|
-| `Credit_Score` | 0.351 |
-| `Loan_Amount` | 0.168 |
-| `Employment_Status` (both columns combined) | 0.257 |
-| `DTI_Ratio` | 0.126 |
-| `Income` | 0.098 |
-
-Importance shows what the trained model relied on. It does **not** prove causation. Logistic Regression coefficients (on standardized features) point the same way as the EDA: `Credit_Score` and `Income` positive, `DTI_Ratio` and `Loan_Amount` negative for the *Approved* class.
-
-## 13. Technologies Used
-
-Python, pandas, NumPy, Matplotlib, seaborn, scikit-learn, Jupyter / Google Colab.
-
-## 14. Project Structure
+## Project Workflow
 
 ```text
-loan-approval-prediction/
-│
-├── data/
-│   └── loan_data.csv
-│
-├── notebooks/
-│   └── loan_approval_prediction.ipynb
-│
-├── README.md
-└── requirements.txt
+Problem Definition
+        ↓
+Dataset Collection
+        ↓
+Data Cleaning
+        ↓
+Exploratory Data Analysis
+        ↓
+Feature Preparation
+        ↓
+Train/Test Split
+        ↓
+Model Training
+        ↓
+Model Comparison
+        ↓
+Model Evaluation
+        ↓
+Model Saving
+        ↓
+Prediction Application
+        ↓
+Streamlit Deployment
 ```
 
-## 15. How to Run
+- **Problem Definition** — Frame loan approval as a binary classification task.
+- **Dataset Collection** — Load the provided applicant dataset (`loan_data.csv`).
+- **Data Cleaning** — Check for missing values, duplicates, and correct data types.
+- **EDA** — Understand class balance and how features relate to approval outcomes.
+- **Feature Preparation** — Select structured features and build a preprocessing pipeline.
+- **Train/Test Split** — Hold out 20% of the data, stratified by target, for unbiased evaluation.
+- **Model Training** — Train Logistic Regression and Random Forest inside a single pipeline.
+- **Model Comparison** — Compare both models on the same held-out test set.
+- **Model Evaluation** — Assess accuracy, precision, recall, F1, and the confusion matrix.
+- **Model Saving** — Persist the winning pipeline with `joblib`.
+- **Prediction Application** — Build a Streamlit app that loads the saved pipeline.
+- **Streamlit Deployment** — Prepare the app for deployment (see [Deployment](#deployment)).
 
-**Locally**
+---
+
+## Dataset
+
+The dataset contains **24,000 records** and **7 original columns**.
+
+| Feature            | Type        | Description                              | Used in Model |
+| ------------------ | ----------- | ----------------------------------------- | :-----------: |
+| Income              | Numerical   | Applicant's annual income                | Yes           |
+| Credit_Score        | Numerical   | Applicant's credit score                 | Yes           |
+| Loan_Amount         | Numerical   | Requested loan amount                    | Yes           |
+| DTI_Ratio           | Numerical   | Debt-to-income ratio                     | Yes           |
+| Employment_Status   | Categorical | Employment category (`employed`/`unemployed`) | Yes      |
+| Text                | Text        | Free-form applicant loan request text    | No            |
+| Approval            | Target      | `Approved` or `Rejected`                 | Target        |
+
+**Target mapping:**
+
+```text
+Rejected = 0
+Approved = 1
+```
+
+The `Text` column is not used by the current structured-data model — see
+[Future Improvements](#future-improvements).
+
+---
+
+## Target Distribution
+
+```text
+Rejected: 83.61%  (20,067 records)
+Approved: 16.39%  (3,933 records)
+```
+
+The target is **imbalanced**, with roughly 5 rejected applications for every approved
+one. Because of this imbalance, accuracy alone can be misleading — a model that always
+predicted `Rejected` would already score about 83.6% accuracy without learning anything
+useful. This is why precision, recall, and F1 score on the minority (`Approved`) class
+are reported alongside accuracy throughout this project.
+
+![Target Distribution](images/target_distribution.png)
+
+---
+
+## Data Cleaning and Preprocessing
+
+Checks performed on the raw dataset:
+
+```text
+Missing values: 0
+Duplicate rows: 0
+```
+
+Preprocessing steps:
+
+- The target column was encoded as `Rejected = 0`, `Approved = 1`.
+- The `Text` column was excluded from the structured-data model.
+- **Numerical features** (`Income`, `Credit_Score`, `Loan_Amount`, `DTI_Ratio`) were
+  standardized with `StandardScaler`.
+- **Categorical feature** (`Employment_Status`) was one-hot encoded with `OneHotEncoder`.
+- All preprocessing was implemented inside a single scikit-learn `ColumnTransformer` /
+  `Pipeline`, rather than as separate manual steps, so the exact same transformation is
+  applied automatically at prediction time.
+
+---
+
+## Train/Test Split
+
+```text
+Training samples: 19,200 (80%)
+Testing samples:   4,800 (20%)
+random_state = 42
+stratify = y
+```
+
+Stratified splitting was used so that both the training and test sets preserve the same
+~83.6% / 16.4% class balance as the full dataset, giving a fair and representative
+evaluation.
+
+---
+
+## Leakage Prevention
+
+- All preprocessing (scaling, encoding) is fitted **only** on the training data, inside
+  the pipeline — never on the full dataset before splitting.
+- The test set was held out and only used once, for final evaluation.
+- The target column (`Approval`) was never included as an input feature.
+- The `Text` column was excluded entirely from the structured model.
+- Because preprocessing and the classifier live in one `Pipeline` object, the saved
+  model reproduces the exact training-time transformation on any new data — there is no
+  separate, hand-written preprocessing code to drift out of sync.
+
+---
+
+## Exploratory Data Analysis
+
+**Credit Score** — Approved applicants had a substantially higher average credit score.
+
+```text
+Approved: ~702.21
+Rejected: ~550.93
+```
+
+**Income** — Approved applicants had a higher average income.
+
+```text
+Approved: ~126,219
+Rejected: ~107,273
+```
+
+**DTI Ratio** — Approved applicants had a lower average debt-to-income ratio.
+
+```text
+Approved: ~22.15
+Rejected: ~37.18
+```
+
+**Loan Amount** — Approved applicants requested, on average, a smaller loan.
+
+```text
+Approved: ~37,664
+Rejected: ~45,668
+```
+
+**Employment Status** — Applicants with `unemployed` status were approved far less
+often than `employed` applicants in this dataset.
+
+**Correlation with the target** (`Approval`, encoded 0/1):
+
+```text
+Credit_Score   +0.352
+Income         +0.136
+Loan_Amount    -0.085
+DTI_Ratio      -0.172
+```
+
+These are simple linear correlations and do not by themselves imply causation — they
+describe the association observed in this dataset.
+
+![Credit Score Analysis](images/credit_score_analysis.png)
+
+![Income Analysis](images/income_analysis.png)
+
+![DTI Ratio Analysis](images/dti_analysis.png)
+
+---
+
+## Models Used
+
+### Logistic Regression (baseline)
+
+A simple, interpretable linear baseline.
+
+```text
+max_iter = 1000
+class_weight = "balanced"
+random_state = 42
+```
+
+### Random Forest (final model)
+
+A tree-based ensemble model, better suited to the non-linear relationships in this
+dataset.
+
+```text
+n_estimators = 400
+max_depth = None
+min_samples_split = 2
+min_samples_leaf = 1
+class_weight = None
+random_state = 42
+```
+
+No other model types were trained for this project.
+
+---
+
+## Model Selection
+
+Both models were trained on the same 19,200-row training set and evaluated on the same
+held-out 4,800-row test set, using identical preprocessing.
+
+Logistic Regression achieved reasonable recall on the minority class but at a
+significant cost to precision, meaning it flagged many `Rejected` applicants as
+`Approved`. Random Forest outperformed it across **every** metric — accuracy,
+precision, recall, and F1 — without sacrificing either class. Because of this
+consistent, across-the-board improvement, **Random Forest was selected as the final
+model** used in the prediction application.
+
+---
+
+## Model Evaluation
+
+Test-set results (4,800 held-out samples):
+
+| Model                | Accuracy | Precision | Recall | F1 Score |
+| --------------------- | -------: | --------: | -----: | -------: |
+| Logistic Regression   |   90.19% |    63.34% | 95.30% |   76.10% |
+| **Random Forest**     | **99.65%** | **98.49%** | **99.36%** | **98.92%** |
+| Majority-class baseline (always predict "Rejected") | 83.61% | — | — | — |
+
+Comparing both models against the majority-class baseline shows that Logistic
+Regression already improves meaningfully over "always guessing Rejected," and Random
+Forest improves substantially further — while also keeping precision and recall
+balanced on the minority `Approved` class, not just overall accuracy.
+
+---
+
+## Confusion Matrix
+
+Random Forest, evaluated on the 4,800-row test set:
+
+|                     | Predicted: Rejected | Predicted: Approved |
+| ------------------- | -------------------: | -------------------: |
+| **Actual: Rejected** | 4,001 (TN)           | 12 (FP)               |
+| **Actual: Approved** | 5 (FN)                | 782 (TP)              |
+
+Out of 4,800 test applicants, the model misclassified 17 total (12 false approvals, 5
+false rejections).
+
+![Confusion Matrix](images/confusion_matrix.png)
+
+---
+
+## Feature Importance
+
+Random Forest feature importances (higher = more influence on the model's decisions
+within this dataset):
+
+```text
+Credit_Score                 0.354
+Loan_Amount                  0.168
+Employment_Status (combined) 0.253
+DTI_Ratio                    0.127
+Income                       0.098
+```
+
+`Credit_Score` and `Employment_Status` are the most influential features, consistent
+with the patterns seen in the EDA section. This reflects how the trained model used
+these features on this specific dataset — it is not a causal claim about real-world
+loan approval.
+
+![Feature Importance](images/feature_importance.png)
+
+---
+
+## Prediction Application
+
+The trained Random Forest pipeline (preprocessing + classifier, saved as a single
+object) is loaded directly into a Streamlit application. The app does **not** retrain
+the model when it starts — it only loads the already-trained pipeline.
+
+The application collects:
+
+```text
+Income
+Credit Score
+Loan Amount
+DTI Ratio
+Employment Status
+```
+
+and returns:
+
+```text
+Predicted class (Approved / Rejected)
+Approval probability
+Rejection probability
+```
+
+Predictions are generated using:
+
+```python
+model.predict(input_df)
+model.predict_proba(input_df)
+```
+
+The app also includes three example test cases that run through the real model (not
+hardcoded results), an applicant summary, and expandable "About the Model" and "Model
+Performance" sections.
+
+---
+
+## Application Screenshots
+
+### Applicant Input
+
+![Applicant Input](images/app_input.png)
+
+### Approved Prediction
+
+![Approved Prediction](images/approved_prediction.png)
+
+### Rejected Prediction
+
+![Rejected Prediction](images/rejected_prediction.png)
+
+*(Add these screenshots after running the app locally — see [Reproducibility](#reproducibility).)*
+
+---
+
+## Deployment
+
+The application is prepared for deployment. The live deployment link will be added
+after deployment.
+
+To run it locally in the meantime:
 
 ```bash
-git clone https://github.com/zillerehman-dev/loan-approval-prediction.git
-cd loan-approval-prediction
 pip install -r requirements.txt
-cd notebooks
-jupyter notebook loan_approval_prediction.ipynb
+streamlit run app.py
 ```
 
-Run all cells from top to bottom. The notebook reads `../data/loan_data.csv`.
+---
 
-**Google Colab**: upload the notebook, run it, and upload `loan_data.csv` when prompted (or place it next to the notebook). The Random Forest grid search (48 combinations × 5 folds) can take several minutes on a small CPU.
+## Project Structure
 
-## 16. Key Learnings
+```text
+loan_approval_prediction/
+│
+├── app.py                          # Streamlit prediction application
+├── loan_approval_prediction.ipynb  # Full training & evaluation notebook
+├── loan_approval_model.pkl         # Saved, trained scikit-learn pipeline
+├── requirements.txt
+├── README.md
+├── data/
+│   └── loan_data.csv
+└── images/
+    ├── target_distribution.png
+    ├── credit_score_analysis.png
+    ├── income_analysis.png
+    ├── dti_analysis.png
+    ├── confusion_matrix.png
+    ├── feature_importance.png
+    ├── app_input.png
+    ├── approved_prediction.png
+    └── rejected_prediction.png
+```
 
-* Fit preprocessing only on training data by using pipelines, and tune with cross-validation on the training set.
-* Compare accuracy with a majority-class baseline; on imbalanced data, look at precision, recall and F1 for the minority class.
-* Feature importance and coefficients describe the model, not real-world causes.
-* Near-perfect results on a likely synthetic dataset call for leakage checks and cautious claims.
+---
 
-## 17. Future Improvements
+## Technologies Used
 
-* Explore the `Text` column (e.g. TF-IDF) and check whether it adds signal.
-* Compare other models such as gradient boosting.
-* Add ROC-AUC, precision-recall curves and calibration; choose a threshold on validation data.
-* Validate on more realistic, noisier data.
-* Deployment (planned for a later phase).
+```text
+Python
+Pandas
+NumPy
+Matplotlib
+Scikit-learn
+Joblib
+Jupyter Notebook
+Streamlit
+```
+
+---
+
+## Reproducibility
+
+### Clone the repository
+
+```bash
+git clone <YOUR_REPOSITORY_URL>
+cd loan_approval_prediction
+```
+
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Run the application
+
+```bash
+streamlit run app.py
+```
+
+### Notebook
+
+`loan_approval_prediction.ipynb` contains the full workflow — data loading, cleaning
+checks, EDA, the preprocessing pipeline, training and evaluation of both models, the
+comparison table, confusion matrix, feature importance, and the code that saves the
+final pipeline to `loan_approval_model.pkl`.
+
+> **Note on reproducing the model file:** a `.pkl` file is tied to the exact
+> scikit-learn version that created it. If you re-run the notebook, run it in the same
+> environment you'll use to run `app.py`, so the saved pipeline stays loadable.
+
+---
+
+## Limitations
+
+- The current model uses structured features only.
+- The `Text` column is not currently included in the model.
+- The dataset appears to contain strong, fairly separable patterns (for example,
+  `Employment_Status = unemployed` applicants are approved very rarely), which likely
+  contributes to the very high Random Forest test performance. The very high test
+  performance may be influenced by strong or rule-like patterns in the dataset.
+- High test-set performance should not automatically be interpreted as real-world
+  lending performance.
+- The model has not been validated on an independent, real-world lending dataset.
+- This application is an educational machine learning project.
+- Predictions should not be treated as financial or lending decisions.
+
+---
+
+## Ethical / Responsible Use
+
+This application is built for **educational and demonstration purposes**. A model
+prediction from this project should not, by itself, determine whether a person
+receives a real loan. Real-world lending systems require additional validation,
+fairness analysis, regulatory compliance, ongoing monitoring, and real-world testing
+that are outside the scope of this project.
+
+---
+
+## Future Improvements
+
+```text
+- Incorporate the Text feature using TF-IDF or NLP techniques
+- Evaluate additional classification algorithms
+- Perform ROC-AUC and Precision-Recall analysis
+- Improve probability calibration
+- Test on more realistic external data
+- Add model monitoring
+- Improve deployment
+```
+
+---
+
+## Learning Outcomes
+
+This project provided practical, end-to-end experience with:
+
+- Machine learning classification
+- Data preprocessing and pipeline design
+- Exploratory data analysis
+- Model training and comparison
+- Evaluation metrics beyond accuracy (precision, recall, F1)
+- Generating predictions on unseen input
+- Integrating a trained model into an application
+- Streamlit application development
+- Project documentation
+- The end-to-end machine learning workflow, from raw data to a usable app
+
+---
+
+## Task Completion Checklist
+
+```text
+- [x] Problem defined
+- [x] Dataset documented
+- [x] Data preprocessing completed
+- [x] EDA completed
+- [x] Models trained
+- [x] Models evaluated
+- [x] Final model selected
+- [x] Prediction application created
+- [x] README documentation created
+- [ ] Application deployed
+- [ ] Final deployment URL added
+```
+
+---
+
+## Author
+
+**Zille Rehman**
+
+GitHub: [zillerehman-dev](https://github.com/zillerehman-dev)
+LinkedIn: [zillerehman05](https://linkedin.com/in/zillerehman05)
