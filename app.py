@@ -138,7 +138,6 @@ st.set_page_config(
 
 st.title("Loan Approval Prediction System")
 st.caption("Machine Learning powered loan approval prediction")
-st.markdown("**Big Brains Internship — Phase 7**")
 st.divider()
 
 # ----------------------------------------------------------------------------
@@ -301,6 +300,6 @@ with st.expander("Model Performance"):
     )
 
 st.caption(
-    "This tool is for internship demonstration purposes only and is not suitable for "
+    "This tool is for educational purposes only and is not suitable for "
     "real-world lending decisions."
 )
