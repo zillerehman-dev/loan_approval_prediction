@@ -350,7 +350,8 @@ Performance" sections.
 
 ### Approved Prediction
 
-![Approved Prediction](images/approved_prediction.png)
+<img width="450" height="450" alt="approve_prediction" src="https://github.com/user-attachments/assets/47f1319c-0018-416c-9d9f-fcc4bf5f3929" />
+
 
 ### Rejected Prediction
 
