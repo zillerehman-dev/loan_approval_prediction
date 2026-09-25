@@ -6,36 +6,6 @@ This project predicts whether a loan application is likely to be **Approved** or
 
 ---
 
-## Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Project Workflow](#project-workflow)
-3. [Dataset](#dataset)
-4. [Target Distribution](#target-distribution)
-5. [Data Cleaning and Preprocessing](#data-cleaning-and-preprocessing)
-6. [Train/Test Split](#traintest-split)
-7. [Leakage Prevention](#leakage-prevention)
-8. [Exploratory Data Analysis](#exploratory-data-analysis)
-9. [Models Used](#models-used)
-10. [Model Selection](#model-selection)
-11. [Model Evaluation](#model-evaluation)
-12. [Confusion Matrix](#confusion-matrix)
-13. [Feature Importance](#feature-importance)
-14. [Prediction Application](#prediction-application)
-15. [Application Screenshots](#application-screenshots)
-16. [Deployment](#deployment)
-17. [Project Structure](#project-structure)
-18. [Technologies Used](#technologies-used)
-19. [Reproducibility](#reproducibility)
-20. [Limitations](#limitations)
-21. [Ethical / Responsible Use](#ethical--responsible-use)
-22. [Future Improvements](#future-improvements)
-23. [Learning Outcomes](#learning-outcomes)
-24. [Task Completion Checklist](#task-completion-checklist)
-25. [Author](#author)
-
----
-
 ## Project Overview
 
 This is a **binary classification** problem. Given structured information about a loan
@@ -122,8 +92,7 @@ Rejected = 0
 Approved = 1
 ```
 
-The `Text` column is not used by the current structured-data model — see
-[Future Improvements](#future-improvements).
+The `Text` column is not used by the current structured-data model
 
 ---
 
@@ -139,8 +108,6 @@ one. Because of this imbalance, accuracy alone can be misleading — a model tha
 predicted `Rejected` would already score about 83.6% accuracy without learning anything
 useful. This is why precision, recall, and F1 score on the minority (`Approved`) class
 are reported alongside accuracy throughout this project.
-
-![Target Distribution](images/target_distribution.png)
 
 ---
 
@@ -239,12 +206,6 @@ DTI_Ratio      -0.172
 These are simple linear correlations and do not by themselves imply causation — they
 describe the association observed in this dataset.
 
-![Credit Score Analysis](images/credit_score_analysis.png)
-
-![Income Analysis](images/income_analysis.png)
-
-![DTI Ratio Analysis](images/dti_analysis.png)
-
 ---
 
 ## Models Used
@@ -320,7 +281,6 @@ Random Forest, evaluated on the 4,800-row test set:
 Out of 4,800 test applicants, the model misclassified 17 total (12 false approvals, 5
 false rejections).
 
-![Confusion Matrix](images/confusion_matrix.png)
 
 ---
 
@@ -341,8 +301,6 @@ Income                       0.098
 with the patterns seen in the EDA section. This reflects how the trained model used
 these features on this specific dataset — it is not a causal claim about real-world
 loan approval.
-
-![Feature Importance](images/feature_importance.png)
 
 ---
 
@@ -427,16 +385,6 @@ loan_approval_prediction/
 ├── README.md
 ├── data/
 │   └── loan_data.csv
-└── images/
-    ├── target_distribution.png
-    ├── credit_score_analysis.png
-    ├── income_analysis.png
-    ├── dti_analysis.png
-    ├── confusion_matrix.png
-    ├── feature_importance.png
-    ├── app_input.png
-    ├── approved_prediction.png
-    └── rejected_prediction.png
 ```
 
 ---
@@ -527,47 +475,3 @@ that are outside the scope of this project.
 - Add model monitoring
 - Improve deployment
 ```
-
----
-
-## Learning Outcomes
-
-This project provided practical, end-to-end experience with:
-
-- Machine learning classification
-- Data preprocessing and pipeline design
-- Exploratory data analysis
-- Model training and comparison
-- Evaluation metrics beyond accuracy (precision, recall, F1)
-- Generating predictions on unseen input
-- Integrating a trained model into an application
-- Streamlit application development
-- Project documentation
-- The end-to-end machine learning workflow, from raw data to a usable app
-
----
-
-## Task Completion Checklist
-
-```text
-- [x] Problem defined
-- [x] Dataset documented
-- [x] Data preprocessing completed
-- [x] EDA completed
-- [x] Models trained
-- [x] Models evaluated
-- [x] Final model selected
-- [x] Prediction application created
-- [x] README documentation created
-- [ ] Application deployed
-- [ ] Final deployment URL added
-```
-
----
-
-## Author
-
-**Zille Rehman**
-
-GitHub: [zillerehman-dev](https://github.com/zillerehman-dev)
-LinkedIn: [zillerehman05](https://linkedin.com/in/zillerehman05)
