@@ -345,7 +345,8 @@ Performance" sections.
 
 ### Applicant Input
 
-<img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/8212af2d-b19c-4955-923a-909025a2338c" />
+<img width="450" height="450" alt="WhatsApp Image 2026-09-25 at 5 39 58 PM" src="https://github.com/user-attachments/assets/1718cd5e-3844-4d97-a0cd-cec1933b2f7e" />
+
 
 
 ### Approved Prediction
@@ -354,8 +355,10 @@ Performance" sections.
 
 
 ### Rejected Prediction
+<img width="450" height="450" alt="WhatsApp Image 2026-09-25 at 5 55 10 PM" src="https://github.com/user-attachments/assets/5bce01bf-5aad-4a24-ad7e-8d6e08338f59" />
 
-![Rejected Prediction](images/rejected_prediction.png)
+<img width="450" height="450" alt="reject_prediction" src="https://github.com/user-attachments/assets/33d98c95-98eb-4a34-9e57-7f7f5e8b5afd" />
+
 
 ---
 
