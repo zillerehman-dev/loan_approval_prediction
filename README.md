@@ -345,7 +345,8 @@ Performance" sections.
 
 ### Applicant Input
 
-![Applicant Input](images/app_input.png)
+<img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/8212af2d-b19c-4955-923a-909025a2338c" />
+
 
 ### Approved Prediction
 
