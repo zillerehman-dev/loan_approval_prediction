@@ -364,7 +364,7 @@ Performance" sections.
 
 ## Deployment
 
-The application is prepared for deployment. The live deployment link is:/n
+The application is prepared for deployment. The live deployment link is below: <br>
 https://loanapprovalprediction-dep.streamlit.app/
 
 You can run it locally also.
