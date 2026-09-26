@@ -364,11 +364,10 @@ Performance" sections.
 
 ## Deployment
 
-The application is prepared for deployment. The live deployment link will be added
-after deployment.
+The application is prepared for deployment. The live deployment link is below:
+Link:  https://loanapprovalprediction-dep.streamlit.app/
 
-To run it locally in the meantime:
-
+You can run it locally also.
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
