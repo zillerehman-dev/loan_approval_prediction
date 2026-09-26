@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Loan Approval Prediction
 
 **Machine Learning Classification Project with Streamlit Deployment**
