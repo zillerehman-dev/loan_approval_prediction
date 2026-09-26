@@ -153,7 +153,6 @@ with st.sidebar:
         - **Dataset:** Loan Approval Dataset
         """
     )
-    st.info("The prediction is generated using the trained machine learning pipeline.")
 
 # ----------------------------------------------------------------------------
 # Load model
